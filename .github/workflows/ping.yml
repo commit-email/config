@@ -1,6 +1,15 @@
 name: Ping commit.email with current config
 on:
   workflow_dispatch:
+    inputs:
+      owner:
+        description: 'Who owns the repo?'
+        required: false
+        type: string
+      repo:
+        description: 'Which repo should be targeted?'
+        required: false
+        type: string
 
 jobs:
   build:
