@@ -1,0 +1,14 @@
+name: Ping commit.email with current config
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          repository: commit-email/commit.email
+          event-type: configuration
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
