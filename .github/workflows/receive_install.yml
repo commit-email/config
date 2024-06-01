@@ -1,0 +1,25 @@
+name: Receive install event
+on:
+  repository_dispatch:
+    types: [install]
+
+jobs:
+  receive_install:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Write payload to file
+        run: |
+          echo "Installed by ${{ github.event.client_payload.user }} on ${{ github.event.client_payload.install_time }}" >> README.md
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "app@commit.email"
+          git config --local user.name "commit.email"
+          git add README.md
+          git commit -m "Post-install test commit"
+          git push
