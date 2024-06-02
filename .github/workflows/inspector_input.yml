@@ -1,0 +1,33 @@
+name: Send config to inspector
+on:
+  workflow_dispatch:
+    inputs:
+      owner:
+        description: "(Override) Repo owner?"
+        required: false
+        type: string
+      repo:
+        description: "(Override) Repo name?"
+        required: false
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read JSON
+        id: read_config
+        run: |
+          json=$(cat config/inspector.json)
+          echo "::set-output name=config::$json"
+        shell: bash
+
+      - name: Use JSON
+        run: |
+          config=${{ fromJSON(steps.read_config.outputs.config) }}
+          owner=${{ github.event.inputs.owner || config.owner }}
+          repo=${{ github.event.inputs.repo || config.repo }}
+          useSimpleSummary=${{ config.useSimpleSummary }}
