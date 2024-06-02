@@ -1,0 +1,25 @@
+name: Receive successful output from install
+on:
+  repository_dispatch:
+    types: [install_output]
+
+jobs:
+  receive_install:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Write payload to file
+        run: |
+          echo "<br><br>Successfully installed by ${{ github.event.client_payload.user }} on ${{ github.event.client_payload.install_date }}" >> README.md
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "app@commit.email"
+          git config --local user.name "commit.email"
+          git add README.md
+          git commit -m "Confirms successful installation"
+          git push

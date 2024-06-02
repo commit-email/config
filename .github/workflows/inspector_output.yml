@@ -1,7 +1,7 @@
-name: Receive install event
+name: Receive successful output from inspector
 on:
   repository_dispatch:
-    types: [install]
+    types: [inspector_output]
 
 jobs:
   receive_install:
@@ -14,12 +14,13 @@ jobs:
 
       - name: Write payload to file
         run: |
-          echo "<br><br>Successfully installed by ${{ github.event.client_payload.user }} on ${{ github.event.client_payload.install_date }}" >> README.md
+          datetime=$(date +%Y%m%d%H%M%S)
+          echo "${{ github.event.client_payload.results }}" >> data/$datetime.txt
 
       - name: Commit and push
         run: |
           git config --local user.email "app@commit.email"
           git config --local user.name "commit.email"
-          git add README.md
-          git commit -m "Post-install confirmation commit"
+          git add data/*.txt
+          git commit -m "Adds inspector results"
           git push
