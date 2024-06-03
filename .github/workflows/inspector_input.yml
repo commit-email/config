@@ -12,16 +12,15 @@ jobs:
       - name: Read JSON
         id: read_config
         run: |
-          json=$(cat config/inspector.json)
+          json=$(jq -c . < config/inspector.json)
           echo "::set-output name=config::$json"
         shell: bash
 
       - name: Validate JSON
         run: |
-          config=${{ fromJSON(steps.read_config.outputs.config) }}
-          owner=${{ config.owner }}
-          repo=${{ config.repo }}
-          useSimpleSummary=${{ config.useSimpleSummary }}
+          owner=${{ fromJSON(steps.read_config.outputs.config).owner }}
+          repo=${{ fromJSON(steps.read_config.outputs.config).repo }}
+          useSimpleSummary=${{ fromJSON(steps.read_config.outputs.config).useSimpleSummary }}
 
           if [[ ! "$owner" =~ ^[a-zA-Z0-9]+$ ]]; then
             echo "owner must be alphanumeric and at least 1 character long"
@@ -35,7 +34,3 @@ jobs:
             echo "useSimpleSummary must be a boolean"
             exit 1
           fi
-        env:
-          owner: ${{ config.owner }}
-          repo: ${{ config.repo }}
-          useSimpleSummary: ${{ config.useSimpleSummary }}
